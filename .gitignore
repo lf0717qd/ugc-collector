@@ -1,0 +1,6 @@
+__pycache__/
+data/
+*.csv
+.seen_*
+*.log
+采集日志*
