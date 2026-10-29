@@ -1,0 +1,193 @@
+{
+  "_说明": "每个平台的入口、搜索地址、文本选择器。改这里不用改代码。",
+  "_字段": {
+    "url": "默认打开的页面",
+    "search": "搜索地址模板，{kw} 会被替换成关键词",
+    "selectors": "评价文本的选择器，从上到下试，命中即用",
+    "start_text": "开始抓取前先把页面滚到这个文字处（可选）",
+    "next_selector": "翻页按钮（可选），滚动到底仍无新增时点击",
+    "automation": "false 表示该平台无法用浏览器自动化，只能人工",
+    "batch.comment_text_selectors": "（v2 新增）先在这个评论卡片内部找正文节点；找不到才把整块 inner_text 洗干净（见 common.clean_comment）"
+  },
+  "ctrip": {
+    "label": "携程",
+    "url": "https://you.ctrip.com/sight/huazhou2915/2007498.html",
+    "search": "https://you.ctrip.com/searchresult/?keyword={kw}",
+    "selectors": [
+      ".comment-item",
+      "[class*='commentItem']",
+      "[class*='comment-content']",
+      "[class*='commentContent']"
+    ],
+    "start_text": "用户点评",
+    "next_selector": null,
+    "automation": true,
+    "notes": "必须进「广垦(茂名)国家热带农业公园」POI，不是「中国化橘红博览馆」那个（0 条点评）"
+  },
+  "xiaohongshu": {
+    "label": "小红书",
+    "url": "https://www.xiaohongshu.com/search_result?keyword=%E5%8C%96%E6%A9%98%E7%BA%A2%E5%8D%9A%E8%A7%88%E9%A6%86",
+    "search": "https://www.xiaohongshu.com/search_result?keyword={kw}",
+    "selectors": [
+      "[class*='comment'] .content",
+      "[class*='comment-item']",
+      "[class*='comment']",
+      "#detail-desc",
+      ".note-text"
+    ],
+    "text_selectors": [
+      "#detail-desc",
+      ".note-text",
+      ".desc"
+    ],
+    "batch": {
+      "card_selector": "section.note-item",
+      "card_link_selector": "a.cover",
+      "link_prefix": "https://www.xiaohongshu.com",
+      "need_token": true,
+      "title_selectors": [
+        "#detail-title",
+        "[class*='note-title']",
+        "[class*='detail-title']",
+        "h1"
+      ],
+      "comment_text_selectors": [
+        "[class*='content']",
+        "[class*='text']"
+      ],
+      "text_type": "笔记",
+      "comment_type": "评论",
+      "text_with_title": true
+    },
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "需登录。搜索结果页不进正文，要逐篇点开。评论选择器 [class*='comment'] .content 有效；#detail-desc/.note-text 是笔记正文，采正文时另跑。裸 /explore/{id} 直开会被 error 300031 拦 404，须用搜索页卡片 a.cover 的带 xsec_token 链接（见 collect_one.py）"
+  },
+  "dianping": {
+    "label": "大众点评",
+    "url": "https://www.dianping.com/search/keyword/0/0_%E5%8C%96%E6%A9%98%E7%BA%A2%E5%8D%9A%E8%A7%88%E9%A6%86",
+    "search": "https://www.dianping.com/search/keyword/0/0_{kw}",
+    "selectors": [
+      ".review-words",
+      ".comment-item",
+      "[class*='review-words']",
+      "[class*='comment']"
+    ],
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "网页版风控严格，常跳验证码。建议改用 App 人工采"
+  },
+  "douyin": {
+    "label": "抖音",
+    "url": "https://www.douyin.com/search/%E5%8C%96%E6%A9%98%E7%BA%A2%E5%8D%9A%E8%A7%88%E9%A6%86",
+    "search": "https://www.douyin.com/search/{kw}",
+    "selectors": [
+      "[data-e2e='comment-item']",
+      ".comment-item",
+      "[class*='commentItem']",
+      "[class*='comment-content']"
+    ],
+    "text_selectors": [
+      "h1",
+      "[data-e2e='video-desc']",
+      "[data-e2e='video-detail']",
+      "[class*='video-info'] [class*='desc']"
+    ],
+    "batch": {
+      "card_selector": "div[id^='waterfall_item_'], a[href*='/video/']",
+      "card_link_selector": null,
+      "link_prefix": "https://www.douyin.com",
+      "need_token": false,
+      "title_selectors": [],
+      "comment_text_selectors": [
+        "[data-e2e='comment-content']",
+        "[class*='comment-content']"
+      ],
+      "text_type": "视频文案",
+      "comment_type": "评论",
+      "text_with_title": false,
+      "comment_mode": "douyin",
+      "text_mode": "douyin"
+    },
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "v3(2026-10-27)：抖音改用专用提取——正文取 h1 / document.title（/note/ 无 h1）/ detail-video-info 首行，取最长；评论按 data-e2e=comment-item 拆块（自身内容块 + 楼中楼递归），不再整块 inner_text；补采发布日期 detail-video-publish-time。"
+  },
+  "mafengwo": {
+    "label": "马蜂窝",
+    "url": "https://www.mafengwo.cn/search/q.php?q=%E5%8C%96%E5%B7%9E",
+    "search": "https://www.mafengwo.cn/search/q.php?q={kw}",
+    "selectors": [
+      ".rev-txt",
+      ".comment-item",
+      "[class*='rev-txt']",
+      "[class*='comment']"
+    ],
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "量少，优先找游记正文里的主观描述"
+  },
+  "baidu_zhidao": {
+    "label": "百度知道",
+    "url": "https://zhidao.baidu.com/search?word=%E5%8C%96%E6%A9%98%E7%BA%A2%E5%8D%9A%E8%A7%88%E9%A6%86",
+    "search": "https://zhidao.baidu.com/search?word={kw}",
+    "selectors": [
+      ".best-text",
+      ".answer-text",
+      "[class*='best-text']",
+      "[class*='answer']"
+    ],
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "是问答不是点评，价值低，做补充即可"
+  },
+  "wechat_article": {
+    "label": "研学机构推文",
+    "url": null,
+    "search": "https://weixin.sogou.com/weixin?type=2&query={kw}",
+    "selectors": [],
+    "start_text": null,
+    "next_selector": null,
+    "automation": false,
+    "notes": "留言区必须在微信内打开，无法自动化。用搜狗找到文章，转发到微信再人工看留言"
+  },
+  "weibo": {
+    "label": "微博",
+    "url": "",
+    "search": "https://s.weibo.com/weibo?q={kw}",
+    "selectors": [
+      ".item1",
+      "div.item1",
+      "[class*=\"item1\"]"
+    ],
+    "text_selectors": [
+      "div.wbpro-feed-content",
+      "div[class*=\"wbpro-feed-content\"]",
+      "div[class*=\"wbtext\"]"
+    ],
+    "batch": {
+      "card_selector": ".item1",
+      "card_link_selector": "",
+      "link_prefix": "",
+      "title_selectors": [],
+      "comment_text_selectors": [
+        ".con1 .text",
+        ".text"
+      ],
+      "text_type": "微博正文",
+      "comment_type": "评论",
+      "text_with_title": false,
+      "comment_mode": "weibo",
+      "text_mode": null
+    },
+    "start_text": null,
+    "next_selector": null,
+    "automation": true,
+    "notes": "v2(2026-10-28)：微博改专用接口模式。DOM 实测只能渲染 19 条评论且滚不动（.item1 恒 19、.list2 楼中楼容器恒空），故评论走 weibo.com/ajax/statuses/buildComments 翻页（flow=0 按热度 + flow=1 按时间，按评论 id 去重），楼中楼走 m.weibo.cn/comments/hotFlowChild。正文选择器改为 div.wbpro-feed-content（344 字全文），发布日期取 ajax/statuses/show 的 created_at。"
+  }
+}
